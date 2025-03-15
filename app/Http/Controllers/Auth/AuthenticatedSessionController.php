@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return to_route('welcome');
+        return $this->withError('You have been logged out.')->redirect(route('public.landing', absolute: false));
     }
 
     /**
@@ -47,6 +47,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return $this->withSuccess('You have been logged in.')->redirect(route('user.dashboard', absolute: false));
     }
 }
