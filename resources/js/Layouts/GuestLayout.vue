@@ -1,23 +1,39 @@
 <script setup>
-import {Head, Link} from '@inertiajs/vue3';
+import {Head, router} from '@inertiajs/vue3';
 import {route} from 'ziggy-js';
+import AppToast from "@/Components/app-toast.vue";
 </script>
 
 <template>
     <Head :title="$page.props.title"/>
     <v-layout class="rounded rounded-md">
-        <v-app-bar :title="$page.props.title" app>
+        <v-app-bar :title="$page.props.title" app color="primary">
             <template #title>
-                <v-btn variant="text">
-                    <Link :href="route('public.welcome')">Site Title</Link>
+                <v-btn
+                    :active="route().current('public.landing')"
+                    :href="route('public.landing')"
+                    variant="text"
+                    @click.prevent="router.visit(route('public.landing'))"
+                >
+                    Site Title
                 </v-btn>
             </template>
             <template #default>
-                <v-btn :active="route().current('public.login')" variant="text">
-                    <Link v-if="!$page.props.auth.user" :href="route('public.login')">Login</Link>
+                <v-btn
+                    :active="route().current('public.login')"
+                    :href="route('public.login')"
+                    variant="text"
+                    @click.prevent="router.visit(route('public.login'))"
+                >
+                    Login
                 </v-btn>
-                <v-btn :active="route().current('public.register')" variant="text">
-                    <Link v-if="!$page.props.auth.user" :href="route('public.register')">Register</Link>
+                <v-btn
+                    :active="route().current('public.register')"
+                    :href="route('public.register')"
+                    variant="text"
+                    @click.prevent="router.get(route('public.register'))"
+                >
+                    Register
                 </v-btn>
             </template>
         </v-app-bar>
@@ -27,5 +43,6 @@ import {route} from 'ziggy-js';
                 <slot/>
             </v-container>
         </v-main>
+        <app-toast/>
     </v-layout>
 </template>

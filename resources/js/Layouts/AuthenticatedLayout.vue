@@ -1,13 +1,10 @@
 <script setup>
-import {useSlots} from 'vue';
-
-const slots = useSlots();
+import AppToast from "@/Components/app-toast.vue";
 </script>
 
 <template>
     <v-layout class="rounded rounded-md">
         <v-system-bar color="grey-darken-3"></v-system-bar>
-
         <v-navigation-drawer
             color="grey-darken-2"
             permanent
@@ -53,5 +50,6 @@ const slots = useSlots();
                 </v-sheet>
             </v-container>
         </v-main>
+        <app-toast/>
     </v-layout>
 </template>

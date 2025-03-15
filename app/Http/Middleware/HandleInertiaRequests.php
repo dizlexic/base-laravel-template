@@ -22,11 +22,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $props = $request->session()->get('props', []);
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
+            ...$props,
             'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
