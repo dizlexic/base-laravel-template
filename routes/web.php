@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Landing', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('public.welcome');
+})->name('public.landing');
 
 Route::group(['middleware' => 'throttle:6,1'], static function () {
     Route::get('/tags', [TagController::class, 'index'])->name('public.tags.index');
@@ -30,4 +30,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('user.profile.destroy');
 });
 
+
 require __DIR__ . '/auth.php';
+
+if (config('app.env') === 'local' || config('app.debug') === true) {
+    Route::get('/info', static function () {
+        return phpinfo();
+    });
+}
