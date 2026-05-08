@@ -1,0 +1,25 @@
+[Unit]
+Description=Laravel Horizon (queue supervisor)
+Documentation=https://laravel.com/docs/horizon
+After=network-online.target sail-app.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sail
+Group=sail
+WorkingDirectory=/var/www/html
+EnvironmentFile=-/var/www/html/.env
+ExecStart=/usr/bin/php /var/www/html/artisan horizon
+ExecStop=/usr/bin/php /var/www/html/artisan horizon:terminate
+Restart=always
+RestartSec=5
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=3600
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=horizon
+
+[Install]
+WantedBy=multi-user.target

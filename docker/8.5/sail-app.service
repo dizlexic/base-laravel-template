@@ -1,0 +1,25 @@
+[Unit]
+Description=Sail application (PHP serve via supervisord)
+Documentation=https://laravel.com/docs/sail
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/html
+EnvironmentFile=-/var/www/html/.env
+# start-container execs supervisord -n, which keeps the existing
+# `program:php` block alive (artisan serve / php-fpm). systemd treats
+# this as a normal long-running service.
+ExecStart=/usr/local/bin/start-container
+Restart=always
+RestartSec=5
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=60
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sail-app
+
+[Install]
+WantedBy=multi-user.target
