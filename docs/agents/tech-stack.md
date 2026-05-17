@@ -16,8 +16,8 @@
 ## Frontend
 
 - **Inertia.js + Vue 3 + TypeScript + Vite**. Pages live in
-  `resources/js/Pages/...`, layouts in `resources/js/Layouts/...`, shared
-  components in `resources/js/Components/...`. Component filenames are
+  `resources/js/pages/...`, layouts in `resources/js/layouts/...`, shared
+  components in `resources/js/components/...`. Component filenames are
   PascalCase (`UserCard.vue`).
 - Use `<script setup lang="ts">` for new components.
 - Type-check with `npm run types:check` (runs `vue-tsc`); ESLint and
@@ -25,6 +25,45 @@
   root.
 - Routes are exposed to the frontend via **Wayfinder** — prefer
   `route('users.show', user)` helpers over hard-coded URL strings.
+
+### UI library: Vuetify 3 + Material Design Icons
+
+The project uses **Vuetify 3** for every UI component and **Material Design
+Icons** for every icon. **Tailwind CSS, shadcn-vue, Lucide, and Sonner are not
+installed and must not be reintroduced.** See `AGENTS.md` §6.4 for the binding
+ruleset; this section is the per-package detail.
+
+- The Vuetify plugin is created in `resources/js/plugins/vuetify.ts` (light +
+  dark themes, MDI iconset, global component defaults) and registered in
+  `resources/js/app.ts` via Inertia's `setup` hook.
+- MDI is loaded as a font: `@mdi/font` is imported once in
+  `resources/css/app.css` (`@import '@mdi/font/css/materialdesignicons.css';`).
+  Reference icons by string name everywhere:
+  - `<v-icon icon="mdi-account-circle" />`
+  - `<v-btn prepend-icon="mdi-content-save">Save</v-btn>`
+  - In `NavItem` definitions: `icon: 'mdi-view-dashboard-outline'`.
+- Forms are built from `<v-text-field>` / `<v-checkbox>` / `<v-otp-input>`
+  with the field's `:error-messages` prop bound directly to Inertia
+  validation errors. The standalone `<InputError>` component is retained
+  only for rare cross-field errors.
+- Dialogs use `<v-dialog>`. Toasts use `<AppSnackbar />` powered by
+  `useSnackbar()` (which wraps `<v-snackbar>`).
+- Theme switching goes through `useAppearance()`
+  (`resources/js/composables/useAppearance.ts`). It writes the resolved
+  theme into `vuetify.theme.global.name.value` so every Vuetify component
+  recolours instantly; it also toggles a `.dark` class on `<html>` so
+  third-party / native chrome can follow suit.
+- Vuetify's bundled CSS utilities replace Tailwind:
+  - Spacing: `pa-4`, `pa-6`, `ma-2`, `mt-6`, `ga-3`, `ga-4` (gap), …
+  - Flex/grid: `d-flex`, `flex-column`, `align-center`, `justify-space-between`,
+    `flex-grow-1`, `flex-wrap`, …
+  - Typography: `text-h6`, `text-body-2`, `text-caption`, `text-medium-emphasis`,
+    `font-weight-medium`, `text-truncate`.
+  - Colour: prefer Vuetify props (`color="primary"`, `color="error"`) over ad-hoc
+    background classes; the palette lives in `resources/js/plugins/vuetify.ts`.
+- One-off styles belong in a `<style scoped>` block on the component that
+  owns them; reach for the `--v-theme-*` CSS variables so the style follows
+  the active theme.
 
 ## Authentication & authorization
 
@@ -116,8 +155,10 @@ notes:
 - **Laravel Dusk 8** drives **UI** tests in `tests/Browser/` against the
   `selenium` Sail service (`./vendor/bin/sail dusk`). Dusk is
   **incompatible with `RefreshDatabase`** — use `DatabaseTruncation`
-  (or `DatabaseMigrations`). Prefer `@dusk` attribute selectors over
-  Tailwind class names.
+  (or `DatabaseMigrations`). Select elements with `@dusk` / `data-test`
+  attributes; never rely on Vuetify-generated classes (`.v-btn`,
+  `.v-list-item--active`, …) — they are an internal implementation detail
+  and change between Vuetify minor versions.
 - **Factories** live in `database/factories/`, **seeders** in
   `database/seeders/`. Tests should use factories, not seeders, except
   when a feature explicitly depends on seed data (e.g. role names from

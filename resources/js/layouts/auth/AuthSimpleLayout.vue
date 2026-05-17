@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AppSnackbar from '@/components/AppSnackbar.vue';
+import { toUrl } from '@/lib/utils';
 import { home } from '@/routes';
 
 defineProps<{
@@ -10,34 +12,40 @@ defineProps<{
 </script>
 
 <template>
-    <div
-        class="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
-    >
-        <div class="w-full max-w-sm">
-            <div class="flex flex-col gap-8">
-                <div class="flex flex-col items-center gap-4">
-                    <Link
-                        :href="home()"
-                        class="flex flex-col items-center gap-2 font-medium"
-                    >
-                        <div
-                            class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
+    <!--
+        Centred authentication shell used by the login / register / forgot
+        password screens. Wraps the form in a `<v-app>` so any Vuetify
+        components (snackbars, dialogs) work without an outer shell.
+    -->
+    <v-app>
+        <v-main class="bg-background">
+            <v-container
+                class="d-flex flex-column align-center justify-center min-h-screen ga-6"
+            >
+                <v-sheet width="100%" max-width="400" color="transparent">
+                    <div class="d-flex flex-column align-center ga-4 mb-6">
+                        <Link
+                            :href="toUrl(home())"
+                            class="text-decoration-none text-inherit"
                         >
-                            <AppLogoIcon
-                                class="size-9 fill-current text-[var(--foreground)] dark:text-white"
-                            />
+                            <v-avatar size="48" color="primary" rounded="md">
+                                <AppLogoIcon />
+                            </v-avatar>
+                            <span class="sr-only">{{ title }}</span>
+                        </Link>
+                        <div class="text-center">
+                            <h1 class="text-h6 font-weight-medium mb-1">
+                                {{ title }}
+                            </h1>
+                            <p class="text-body-2 text-medium-emphasis">
+                                {{ description }}
+                            </p>
                         </div>
-                        <span class="sr-only">{{ title }}</span>
-                    </Link>
-                    <div class="space-y-2 text-center">
-                        <h1 class="text-xl font-medium">{{ title }}</h1>
-                        <p class="text-center text-sm text-muted-foreground">
-                            {{ description }}
-                        </p>
                     </div>
-                </div>
-                <slot />
-            </div>
-        </div>
-    </div>
+                    <slot />
+                </v-sheet>
+            </v-container>
+        </v-main>
+        <AppSnackbar />
+    </v-app>
 </template>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { SidebarInset } from '@/components/ui/sidebar';
 import type { AppVariant } from '@/types';
 
 type Props = {
@@ -11,18 +10,24 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
     variant: 'sidebar',
 });
+
 const className = computed(() => props.class);
 </script>
 
 <template>
-    <SidebarInset v-if="props.variant === 'sidebar'" :class="className">
-        <slot />
-    </SidebarInset>
-    <main
-        v-else
-        class="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl"
-        :class="className"
-    >
-        <slot />
-    </main>
+    <!--
+        Vuetify's `<v-main>` already takes care of offsetting the content
+        for any `<v-app-bar>` or `<v-navigation-drawer>` in the layout, so
+        we don't need separate sidebar / header branches like shadcn did.
+    -->
+    <v-main :class="className">
+        <v-container
+            fluid
+            class="h-100 d-flex flex-column ga-4"
+            :class="props.variant === 'header' ? 'mx-auto' : ''"
+            :max-width="props.variant === 'header' ? 1280 : undefined"
+        >
+            <slot />
+        </v-container>
+    </v-main>
 </template>

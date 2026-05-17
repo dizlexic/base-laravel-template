@@ -13,13 +13,32 @@ defineProps<Props>();
 </script>
 
 <template>
+    <!--
+        Renders an inline Inertia link with Vuetify-aware styling: it inherits
+        the surface foreground colour and uses a subtle underline that follows
+        the active theme.
+    -->
     <Link
         :href="href"
         :tabindex="tabindex"
         :method="method"
         :as="as"
-        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+        class="app-text-link"
     >
         <slot />
     </Link>
 </template>
+
+<style scoped>
+.app-text-link {
+    color: rgb(var(--v-theme-on-surface));
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--v-theme-on-surface), 0.35);
+    text-underline-offset: 4px;
+    transition: text-decoration-color 200ms ease-out;
+}
+
+.app-text-link:hover {
+    text-decoration-color: rgba(var(--v-theme-on-surface), 1);
+}
+</style>

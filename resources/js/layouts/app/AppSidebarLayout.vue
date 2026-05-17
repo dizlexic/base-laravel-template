@@ -3,7 +3,6 @@ import AppContent from '@/components/AppContent.vue';
 import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
-import { Toaster } from '@/components/ui/sonner';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
@@ -16,12 +15,16 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
+    <!--
+        Authenticated app shell with persistent navigation drawer. The
+        global `<AppSnackbar />` is rendered by `<AppShell>` so flash
+        toasts surface from every page in this layout automatically.
+    -->
     <AppShell variant="sidebar">
         <AppSidebar />
-        <AppContent variant="sidebar" class="overflow-x-hidden">
-            <AppSidebarHeader :breadcrumbs="breadcrumbs" />
+        <AppSidebarHeader :breadcrumbs="breadcrumbs" />
+        <AppContent variant="sidebar">
             <slot />
         </AppContent>
-        <Toaster />
     </AppShell>
 </template>

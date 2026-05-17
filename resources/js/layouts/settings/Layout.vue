@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
@@ -14,14 +12,17 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
         href: editProfile(),
+        icon: 'mdi-account-circle-outline',
     },
     {
         title: 'Security',
         href: editSecurity(),
+        icon: 'mdi-shield-lock-outline',
     },
     {
         title: 'Appearance',
         href: editAppearance(),
+        icon: 'mdi-palette-outline',
     },
 ];
 
@@ -29,43 +30,38 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <div class="px-4 py-6">
+    <!--
+        Nested layout used inside `AppLayout`. Renders a settings sub-nav
+        (`<v-list>`) alongside the active settings page.
+    -->
+    <div class="pa-4">
         <Heading
             title="Settings"
             description="Manage your profile and account settings"
         />
-
-        <div class="flex flex-col lg:flex-row lg:space-x-12">
-            <aside class="w-full max-w-xl lg:w-48">
-                <nav
-                    class="flex flex-col space-y-1 space-x-0"
-                    aria-label="Settings"
-                >
-                    <Button
+        <v-row>
+            <v-col cols="12" lg="3">
+                <v-list nav density="comfortable" aria-label="Settings">
+                    <v-list-item
                         v-for="item in sidebarNavItems"
                         :key="toUrl(item.href)"
-                        variant="ghost"
-                        :class="[
-                            'w-full justify-start',
-                            { 'bg-muted': isCurrentOrParentUrl(item.href) },
-                        ]"
-                        as-child
-                    >
-                        <Link :href="item.href">
-                            <component :is="item.icon" class="h-4 w-4" />
-                            {{ item.title }}
-                        </Link>
-                    </Button>
-                </nav>
-            </aside>
-
-            <Separator class="my-6 lg:hidden" />
-
-            <div class="flex-1 md:max-w-2xl">
-                <section class="max-w-xl space-y-12">
-                    <slot />
+                        :prepend-icon="item.icon"
+                        :title="item.title"
+                        :href="toUrl(item.href)"
+                        :active="isCurrentOrParentUrl(item.href)"
+                        rounded="lg"
+                        @click.prevent="router.visit(toUrl(item.href))"
+                    />
+                </v-list>
+                <v-divider class="d-lg-none my-4" />
+            </v-col>
+            <v-col cols="12" lg="9">
+                <section style="max-width: 640px">
+                    <div class="d-flex flex-column ga-10">
+                        <slot />
+                    </div>
                 </section>
-            </div>
-        </div>
+            </v-col>
+        </v-row>
     </div>
 </template>

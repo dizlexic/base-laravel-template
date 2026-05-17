@@ -5,10 +5,12 @@ const patternId = `pattern-${useId()}`;
 </script>
 
 <template>
-    <svg
-        class="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20"
-        fill="none"
-    >
+    <!--
+        Subtle diagonal-stripe placeholder used by dashboard cards. The stroke
+        colour follows the active Vuetify theme via the `on-surface` CSS var,
+        so it remains legible on both the light and dark themes.
+    -->
+    <svg class="placeholder-pattern" fill="none">
         <defs>
             <pattern
                 :id="patternId"
@@ -26,6 +28,16 @@ const patternId = `pattern-${useId()}`;
             :fill="`url(#${patternId})`"
             width="100%"
             height="100%"
-        ></rect>
+        />
     </svg>
 </template>
+
+<style scoped>
+.placeholder-pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    stroke: rgba(var(--v-theme-on-surface), 0.2);
+}
+</style>

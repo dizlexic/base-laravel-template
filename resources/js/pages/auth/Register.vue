@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 
@@ -25,84 +20,70 @@ defineOptions({
         v-bind="store.form()"
         :reset-on-success="['password', 'password_confirmation']"
         v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
     >
-        <div class="grid gap-6">
-            <div class="grid gap-2">
-                <Label for="name">Name</Label>
-                <Input
-                    id="name"
-                    type="text"
-                    required
-                    autofocus
-                    :tabindex="1"
-                    autocomplete="name"
-                    name="name"
-                    placeholder="Full name"
-                />
-                <InputError :message="errors.name" />
-            </div>
+        <div class="d-flex flex-column ga-4">
+            <v-text-field
+                id="name"
+                name="name"
+                label="Name"
+                placeholder="Full name"
+                autocomplete="name"
+                required
+                autofocus
+                :tabindex="1"
+                :error-messages="errors.name"
+            />
 
-            <div class="grid gap-2">
-                <Label for="email">Email address</Label>
-                <Input
-                    id="email"
-                    type="email"
-                    required
-                    :tabindex="2"
-                    autocomplete="email"
-                    name="email"
-                    placeholder="email@example.com"
-                />
-                <InputError :message="errors.email" />
-            </div>
+            <v-text-field
+                id="email"
+                type="email"
+                name="email"
+                label="Email address"
+                placeholder="email@example.com"
+                autocomplete="email"
+                required
+                :tabindex="2"
+                :error-messages="errors.email"
+            />
 
-            <div class="grid gap-2">
-                <Label for="password">Password</Label>
-                <PasswordInput
-                    id="password"
-                    required
-                    :tabindex="3"
-                    autocomplete="new-password"
-                    name="password"
-                    placeholder="Password"
-                />
-                <InputError :message="errors.password" />
-            </div>
+            <PasswordInput
+                id="password"
+                name="password"
+                label="Password"
+                autocomplete="new-password"
+                required
+                :tabindex="3"
+                :error-messages="errors.password"
+            />
 
-            <div class="grid gap-2">
-                <Label for="password_confirmation">Confirm password</Label>
-                <PasswordInput
-                    id="password_confirmation"
-                    required
-                    :tabindex="4"
-                    autocomplete="new-password"
-                    name="password_confirmation"
-                    placeholder="Confirm password"
-                />
-                <InputError :message="errors.password_confirmation" />
-            </div>
+            <PasswordInput
+                id="password_confirmation"
+                name="password_confirmation"
+                label="Confirm password"
+                autocomplete="new-password"
+                required
+                :tabindex="4"
+                :error-messages="errors.password_confirmation"
+            />
 
-            <Button
+            <v-btn
                 type="submit"
-                class="mt-2 w-full"
+                color="primary"
+                block
+                size="large"
+                class="mt-2"
                 tabindex="5"
+                :loading="processing"
                 :disabled="processing"
                 data-test="register-user-button"
             >
-                <Spinner v-if="processing" />
                 Create account
-            </Button>
+            </v-btn>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
+        <p class="text-center text-body-2 text-medium-emphasis mt-6">
             Already have an account?
-            <TextLink
-                :href="login()"
-                class="underline underline-offset-4"
-                :tabindex="6"
-                >Log in</TextLink
-            >
-        </div>
+            <TextLink :href="login()" :tabindex="6">Log in</TextLink>
+        </p>
     </Form>
 </template>

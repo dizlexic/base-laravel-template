@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref } from 'vue';
 import { computed, onMounted, ref } from 'vue';
+import { vuetify } from '@/plugins/vuetify';
 import type { Appearance, ResolvedAppearance } from '@/types';
 
 export type { Appearance, ResolvedAppearance };
@@ -10,24 +11,33 @@ export type UseAppearanceReturn = {
     updateAppearance: (value: Appearance) => void;
 };
 
+function resolveAppearance(value: Appearance): ResolvedAppearance {
+    if (value !== 'system') {
+        return value;
+    }
+
+    if (typeof window === 'undefined') {
+        return 'light';
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+}
+
 export function updateTheme(value: Appearance): void {
     if (typeof window === 'undefined') {
         return;
     }
 
-    if (value === 'system') {
-        const mediaQueryList = window.matchMedia(
-            '(prefers-color-scheme: dark)',
-        );
-        const systemTheme = mediaQueryList.matches ? 'dark' : 'light';
+    const resolved = resolveAppearance(value);
 
-        document.documentElement.classList.toggle(
-            'dark',
-            systemTheme === 'dark',
-        );
-    } else {
-        document.documentElement.classList.toggle('dark', value === 'dark');
-    }
+    // Keep the `.dark` class on <html> so any non-Vuetify chrome (e.g. browser
+    // form controls) follows the chosen theme.
+    document.documentElement.classList.toggle('dark', resolved === 'dark');
+
+    // Drive Vuetify's runtime theme so every `<v-...>` component re-paints.
+    vuetify.theme.global.name.value = resolved;
 }
 
 const setCookie = (name: string, value: string, days = 365) => {

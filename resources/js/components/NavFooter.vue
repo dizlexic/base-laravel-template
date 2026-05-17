@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import {
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
 import { toUrl } from '@/lib/utils';
 import type { NavItem } from '@/types';
 
@@ -18,27 +11,20 @@ defineProps<Props>();
 </script>
 
 <template>
-    <SidebarGroup
-        :class="`group-data-[collapsible=icon]:p-0 ${$props.class || ''}`"
-    >
-        <SidebarGroupContent>
-            <SidebarMenu>
-                <SidebarMenuItem v-for="item in items" :key="item.title">
-                    <SidebarMenuButton
-                        class="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
-                        as-child
-                    >
-                        <a
-                            :href="toUrl(item.href)"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <component :is="item.icon" />
-                            <span>{{ item.title }}</span>
-                        </a>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarGroupContent>
-    </SidebarGroup>
+    <!--
+        Secondary list rendered in the navigation drawer's append slot.
+        Items always open in a new tab (external repositories / docs).
+    -->
+    <v-list nav density="comfortable" :class="['pa-2', $props.class]">
+        <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            :prepend-icon="item.icon"
+            :title="item.title"
+            :href="toUrl(item.href)"
+            target="_blank"
+            rel="noopener noreferrer"
+            rounded="lg"
+        />
+    </v-list>
 </template>

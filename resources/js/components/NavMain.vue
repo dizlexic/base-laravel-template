@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import {
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { router } from '@inertiajs/vue3';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
+import { toUrl } from '@/lib/utils';
 import type { NavItem } from '@/types';
 
 defineProps<{
@@ -18,21 +12,22 @@ const { isCurrentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
-        <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton
-                    as-child
-                    :is-active="isCurrentUrl(item.href)"
-                    :tooltip="item.title"
-                >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-    </SidebarGroup>
+    <!--
+        Primary navigation list rendered inside the navigation drawer.
+        `<v-list-item>` handles the active styling and rail-mode collapse;
+        clicks delegate to Inertia's router for SPA navigation.
+    -->
+    <v-list nav density="comfortable" class="pa-2">
+        <v-list-subheader>Platform</v-list-subheader>
+        <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            :prepend-icon="item.icon"
+            :title="item.title"
+            :active="isCurrentUrl(item.href)"
+            :href="toUrl(item.href)"
+            rounded="lg"
+            @click.prevent="router.visit(toUrl(item.href))"
+        />
+    </v-list>
 </template>

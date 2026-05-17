@@ -131,9 +131,11 @@ client-side validation, and visual state.
   hits the *real* HTTP server and can't share a transaction with the
   test). `RefreshDatabase` is **incompatible** with Dusk and will
   silently leak data — use `DatabaseTruncation` or `DatabaseMigrations`.
-- **Selectors:** prefer `@dusk` attributes on Vue components
-  (`<button dusk="submit-login">`). Avoid CSS-class selectors —
-  Tailwind classes change too often.
+- **Selectors:** prefer `@dusk` (or `data-test`) attributes on Vue
+  components (`<v-btn dusk="submit-login">`). **Never** select by
+  Vuetify-generated classes (`.v-btn`, `.v-text-field__input`,
+  `.v-list-item--active`, …) — those are internal and change between
+  Vuetify minor versions.
 - **Auth shortcuts:** `$browser->loginAs($user)` skips the login flow
   for tests that aren't *about* login.
 - **Artifacts:** failed runs drop screenshots into

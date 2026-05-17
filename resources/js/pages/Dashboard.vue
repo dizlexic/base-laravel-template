@@ -17,31 +17,40 @@ defineOptions({
 
 <template>
     <Head title="Dashboard" />
-
-    <div
-        class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-    >
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-            >
-                <PlaceholderPattern />
-            </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-            >
-                <PlaceholderPattern />
-            </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-            >
-                <PlaceholderPattern />
-            </div>
-        </div>
-        <div
-            class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+    <!--
+        Dashboard placeholder. Each card uses `<v-card>` with the diagonal
+        stripe placeholder layered behind for a "loading" feel.
+    -->
+    <div class="d-flex flex-column ga-4">
+        <v-row>
+            <v-col v-for="n in 3" :key="n" cols="12" md="4">
+                <v-card
+                    rounded="xl"
+                    border
+                    flat
+                    class="dashboard-card position-relative overflow-hidden"
+                >
+                    <PlaceholderPattern />
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-card
+            rounded="xl"
+            border
+            flat
+            class="dashboard-card-tall position-relative overflow-hidden flex-grow-1"
         >
             <PlaceholderPattern />
-        </div>
+        </v-card>
     </div>
 </template>
+
+<style scoped>
+.dashboard-card {
+    aspect-ratio: 16 / 9;
+}
+
+.dashboard-card-tall {
+    min-height: 360px;
+}
+</style>

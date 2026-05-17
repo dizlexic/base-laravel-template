@@ -1,46 +1,30 @@
 <script setup lang="ts">
-import { Eye, EyeOff } from 'lucide-vue-next';
 import { ref, useTemplateRef } from 'vue';
-import type { HTMLAttributes } from 'vue';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import type { VTextField } from 'vuetify/components';
 
 defineOptions({ inheritAttrs: false });
 
-const props = defineProps<{
-    class?: HTMLAttributes['class'];
-}>();
-
 const showPassword = ref(false);
-const inputRef = useTemplateRef('inputRef');
+const fieldRef = useTemplateRef<InstanceType<typeof VTextField>>('fieldRef');
 
 defineExpose({
-    $el: inputRef,
-    focus: () => inputRef.value?.$el?.focus(),
+    focus: () => fieldRef.value?.focus(),
 });
 </script>
 
 <template>
-    <div class="relative">
-        <Input
-            ref="inputRef"
-            :type="showPassword ? 'text' : 'password'"
-            :class="cn('pr-10', props.class)"
-            v-bind="$attrs"
-        />
-        <button
-            type="button"
-            @click="showPassword = !showPassword"
-            :class="
-                cn(
-                    'absolute inset-y-0 right-0 flex items-center rounded-r-md px-3 text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none',
-                )
-            "
-            :aria-label="showPassword ? 'Hide password' : 'Show password'"
-            :tabindex="-1"
-        >
-            <EyeOff v-if="showPassword" class="size-4" />
-            <Eye v-else class="size-4" />
-        </button>
-    </div>
+    <!--
+        Thin wrapper around Vuetify's `<v-text-field>` that wires a Material
+        Design Icons eye toggle into the field's `append-inner` slot. All
+        other props (`v-model`, `label`, `error-messages`, …) flow through
+        via `v-bind="$attrs"`.
+    -->
+    <v-text-field
+        ref="fieldRef"
+        :type="showPassword ? 'text' : 'password'"
+        :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+        autocomplete="current-password"
+        v-bind="$attrs"
+        @click:append-inner="showPassword = !showPassword"
+    />
 </template>

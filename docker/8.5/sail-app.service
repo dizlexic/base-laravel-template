@@ -7,6 +7,8 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/var/www/html
+Environment=SUPERVISOR_PHP_USER=sail
+Environment=SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
 EnvironmentFile=-/var/www/html/.env
 # start-container execs supervisord -n, which keeps the existing
 # `program:php` block alive (artisan serve / php-fpm). systemd treats

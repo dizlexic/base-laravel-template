@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue';
-
 defineOptions({
     inheritAttrs: false,
 });
-
-type Props = {
-    className?: HTMLAttributes['class'];
-};
-
-defineProps<Props>();
 </script>
 
 <template>
+    <!--
+        Inlined SVG so the colour can be inherited from the surrounding
+        Vuetify component (e.g. `<v-avatar color="primary">`). It is rendered
+        at 60% of the parent size to leave a comfortable visual padding inside
+        any Vuetify wrapper.
+    -->
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 40 42"
-        :class="className"
+        width="60%"
+        height="60%"
+        aria-hidden="true"
         v-bind="$attrs"
     >
         <path

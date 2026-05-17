@@ -4,10 +4,7 @@ import { computed } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
 import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { toUrl } from '@/lib/utils';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 
@@ -38,7 +35,7 @@ const user = computed(() => page.props.auth.user);
 
     <h1 class="sr-only">Profile settings</h1>
 
-    <div class="flex flex-col space-y-6">
+    <section class="d-flex flex-column ga-6">
         <Heading
             variant="small"
             title="Profile information"
@@ -47,65 +44,70 @@ const user = computed(() => page.props.auth.user);
 
         <Form
             v-bind="ProfileController.update.form()"
-            class="space-y-6"
             v-slot="{ errors, processing }"
         >
-            <div class="grid gap-2">
-                <Label for="name">Name</Label>
-                <Input
+            <div class="d-flex flex-column ga-4">
+                <v-text-field
                     id="name"
-                    class="mt-1 block w-full"
                     name="name"
-                    :default-value="user.name"
-                    required
-                    autocomplete="name"
+                    label="Name"
                     placeholder="Full name"
+                    :default-value="user.name"
+                    autocomplete="name"
+                    required
+                    :error-messages="errors.name"
                 />
-                <InputError class="mt-2" :message="errors.name" />
-            </div>
 
-            <div class="grid gap-2">
-                <Label for="email">Email address</Label>
-                <Input
+                <v-text-field
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
                     name="email"
-                    :default-value="user.email"
-                    required
-                    autocomplete="username"
+                    label="Email address"
                     placeholder="Email address"
+                    :default-value="user.email"
+                    autocomplete="username"
+                    required
+                    :error-messages="errors.email"
                 />
-                <InputError class="mt-2" :message="errors.email" />
-            </div>
 
-            <div v-if="mustVerifyEmail && !user.email_verified_at">
-                <p class="-mt-4 text-sm text-muted-foreground">
+                <v-alert
+                    v-if="mustVerifyEmail && !user.email_verified_at"
+                    type="info"
+                    variant="tonal"
+                    density="comfortable"
+                    icon="mdi-information-outline"
+                >
                     Your email address is unverified.
                     <Link
-                        :href="send()"
+                        :href="toUrl(send())"
                         as="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                        class="font-weight-medium text-decoration-underline"
                     >
                         Click here to resend the verification email.
                     </Link>
-                </p>
+                    <div
+                        v-if="status === 'verification-link-sent'"
+                        class="mt-2 text-success font-weight-medium"
+                    >
+                        A new verification link has been sent to your email
+                        address.
+                    </div>
+                </v-alert>
 
-                <div
-                    v-if="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
-                >
-                    A new verification link has been sent to your email address.
+                <div>
+                    <v-btn
+                        type="submit"
+                        color="primary"
+                        :loading="processing"
+                        :disabled="processing"
+                        data-test="update-profile-button"
+                    >
+                        Save
+                    </v-btn>
                 </div>
             </div>
-
-            <div class="flex items-center gap-4">
-                <Button :disabled="processing" data-test="update-profile-button"
-                    >Save</Button
-                >
-            </div>
         </Form>
-    </div>
+    </section>
 
     <DeleteUser />
 </template>

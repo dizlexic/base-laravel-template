@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 
@@ -22,26 +19,34 @@ defineProps<{
 <template>
     <Head title="Email verification" />
 
-    <div
+    <v-alert
         v-if="status === 'verification-link-sent'"
-        class="mb-4 text-center text-sm font-medium text-green-600"
+        type="success"
+        variant="tonal"
+        density="comfortable"
+        class="mb-4"
     >
         A new verification link has been sent to the email address you provided
         during registration.
-    </div>
+    </v-alert>
 
-    <Form
-        v-bind="send.form()"
-        class="space-y-6 text-center"
-        v-slot="{ processing }"
-    >
-        <Button :disabled="processing" variant="secondary">
-            <Spinner v-if="processing" />
-            Resend verification email
-        </Button>
+    <Form v-bind="send.form()" v-slot="{ processing }">
+        <div class="d-flex flex-column align-center ga-4">
+            <v-btn
+                type="submit"
+                color="primary"
+                size="large"
+                :loading="processing"
+                :disabled="processing"
+            >
+                Resend verification email
+            </v-btn>
+        </div>
+    </Form>
 
-        <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
+    <Form v-bind="logout.form()" class="d-flex justify-center mt-6">
+        <v-btn type="submit" variant="text" density="comfortable">
             Log out
-        </TextLink>
+        </v-btn>
     </Form>
 </template>

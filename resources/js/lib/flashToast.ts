@@ -1,8 +1,10 @@
 import { router } from '@inertiajs/vue3';
-import { toast } from 'vue-sonner';
+import { useSnackbar } from '@/composables/useSnackbar';
 import type { FlashToast } from '@/types/ui';
 
 export function initializeFlashToast(): void {
+    const { push } = useSnackbar();
+
     router.on('flash', (event) => {
         const flash = (event as CustomEvent).detail?.flash;
         const data = flash?.toast as FlashToast | undefined;
@@ -11,6 +13,6 @@ export function initializeFlashToast(): void {
             return;
         }
 
-        toast[data.type](data.message);
+        push(data.type, data.message);
     });
 }

@@ -14,6 +14,10 @@ or pulled from environment variables.
 ## 1. Project at a glance
 
 This is a **Laravel 13** application using the **Inertia + Vue 3** starter kit.
+The UI is built with **Vuetify 3** (Material Design components) and the
+**Material Design Icons** (MDI) iconset — there is **no Tailwind, no shadcn-vue,
+and no Lucide** in this project. Every screen, every component, and every
+agent-authored UI element **must** use Vuetify primitives and MDI icon names.
 It is developed locally via **Laravel Sail** (Docker), uses **MySQL 8.4** and
 **Redis**, and ships with **Horizon**, **Telescope**, **Fortify**, **Sanctum**,
 **Scout**, **Socialite**, **Wayfinder**, and **Spatie Permission** preinstalled.
@@ -52,6 +56,7 @@ Detailed breakdown lives in [`docs/agents/tech-stack.md`](docs/agents/tech-stack
 | PHP              | 8.3+                                                    |
 | Framework        | Laravel 13                                              |
 | Frontend         | Inertia.js + Vue 3 + TypeScript + Vite                  |
+| UI components    | Vuetify 3 (Material Design) + Material Design Icons     |
 | Local dev        | Laravel Sail (Docker Compose)                           |
 | Database         | MySQL 8.4 (with phpMyAdmin in Docker)                   |
 | Cache / Queue    | Redis + Laravel Horizon                                 |
@@ -220,8 +225,10 @@ Cross-cutting rules:
 - **Dusk is incompatible with `RefreshDatabase`** — use
   `DatabaseTruncation` (or `DatabaseMigrations`) instead.
 - Browser tests run against the `selenium` Sail service via
-  `./vendor/bin/sail dusk`. Use `@dusk` attributes as selectors, not
-  Tailwind classes.
+  `./vendor/bin/sail dusk`. Use `@dusk` attributes (or `data-test`) as
+  selectors. **Never** select by Vuetify-generated class names (`.v-btn`,
+  `.v-text-field__input`, etc.) — they are an implementation detail of the
+  component library and change between Vuetify minor releases.
 - Fuzz tests live in their own PHPUnit suite and are **opt-in** — agents
   run them locally for any PR that changes a parser or a public endpoint;
   CI runs the suite nightly. Always seed the RNG (`ERIS_SEED=…` or
@@ -256,6 +263,44 @@ checked via Gates / Policies / `$user->can(...)` middleware.
     `App\Models\Role` and `App\Models\Permission` extend the Spatie
     models and mix in `HasUuids`. `config/permission.php` points at the
     app-level classes.
+
+### 6.4 UI components (Vuetify + MDI)
+
+The frontend is **Vuetify 3** end-to-end. Tailwind CSS, the shadcn-vue
+component library, and the Lucide icon set are **deliberately not installed**.
+
+Rules:
+
+- Every UI must be composed from Vuetify primitives — `<v-app>`, `<v-app-bar>`,
+  `<v-navigation-drawer>`, `<v-main>`, `<v-card>`, `<v-list>`, `<v-btn>`,
+  `<v-text-field>`, `<v-checkbox>`, `<v-otp-input>`, `<v-dialog>`,
+  `<v-snackbar>`, `<v-alert>`, etc. Do **not** hand-roll a button, dialog, or
+  form input out of raw HTML when a Vuetify equivalent exists.
+- Every icon **must** be an MDI string passed to Vuetify
+  (`<v-icon icon="mdi-account-circle" />`, `<v-btn prepend-icon="mdi-magnify">`,
+  `<v-list-item :prepend-icon="item.icon">`). Browse
+  [pictogrammers.com/library/mdi](https://pictogrammers.com/library/mdi/) for
+  available glyphs. The MDI font is imported from `@mdi/font` in
+  `resources/css/app.css` and wired into Vuetify via `resources/js/plugins/vuetify.ts`.
+- Layout/spacing/typography should use **Vuetify utility classes** (`d-flex`,
+  `align-center`, `ga-4`, `pa-6`, `text-body-2`, `text-medium-emphasis`, …) and
+  Vuetify density/variant props — not Tailwind utilities. If a one-off style
+  is genuinely required, scope it in a `<style scoped>` block.
+- Theming flows through `resources/js/plugins/vuetify.ts` (light + dark
+  palettes) and `resources/js/composables/useAppearance.ts`, which writes the
+  active theme name into `vuetify.theme.global.name.value`. Toggling appearance
+  must go through `useAppearance` — never mutate `document.documentElement`
+  classes directly to recolour Vuetify components.
+- Flash toasts surface through `<AppSnackbar />` + `useSnackbar()`
+  (which uses `<v-snackbar>` under the hood). Don't add a competing toast
+  library.
+- New global components live in `resources/js/components/`; new pages in
+  `resources/js/pages/`. Pages opt into shared chrome with
+  `defineOptions({ layout: ... })` — agents must use existing layouts
+  (`AppLayout`, `AuthLayout`, `settings/Layout`) rather than re-implementing
+  `<v-app>` per page.
+- When in doubt, **read the Vuetify 3 docs**: https://vuetifyjs.com/en/components/all/ —
+  most "I need a custom widget" needs are already covered.
 
 ---
 
