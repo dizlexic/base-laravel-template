@@ -1,3 +1,6 @@
+import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles';
+
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 import { initializeTheme } from '@/composables/useAppearance';
@@ -32,14 +35,11 @@ createInertiaApp({
             .use(plugin)
             .use(vuetify)
             .mount(el);
+
+        initializeTheme();
+        initializeFlashToast();
     },
     progress: {
         color: '#4B5563',
     },
 });
-
-// This will set the Vuetify theme (light / dark / system) on page load...
-initializeTheme();
-
-// This will surface flash toast data from the server through Vuetify snackbars.
-initializeFlashToast();
