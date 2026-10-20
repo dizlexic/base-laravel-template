@@ -1,0 +1,28 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "model": "omlx/example-model",
+    "provider": {
+        "omlx": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "oMLX (local MLX)",
+            "options": {
+                "baseURL": "http://{server_url}/v1",
+                "apiKey": "{api_key}"
+            },
+            "models": {
+                "example-model": {
+                    "name": "example-model"
+                }
+            }
+        }
+    },
+    "mcp": {
+        "moo-tasks": {
+            "type": "remote",
+            "url": "https://mootasks.dev/api/boards/{board_id}/mcp",
+            "headers": {
+                "Authorization": "{bearer_token}"
+            }
+        }
+    }
+}
